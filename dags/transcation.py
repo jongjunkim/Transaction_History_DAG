@@ -6,12 +6,6 @@ from airflow import DAG
 from airflow.providers.mysql.operators.mysql import MySqlOperator
 
 
-default_args = {
-    'depends_on_past': False,
-    'retires': 1,
-    'retry_delay': timedelta(minutes=5)
-}
-
 sql_create_table = """
     CREATE TABLE transaction_history (
         id int not null AUTO_INCREMENT Primary key, 
@@ -48,14 +42,12 @@ def insert_table(filedirectory):
 def handle_empty_decimal(value):
     return 0 if value == '' else float(value)  # Convert to float for numeric fields
 
-filedirectory = r'C:\Users\JONGJUN KIM\DAG_File\AccountHistory.csv'
+filedirectory = r"/opt/airflow/data/AccountHistory.csv"
 sql_insert_data = insert_table(filedirectory)
-
 
 
 with DAG(
     'Transaction.csv_to_MySQL',
-    default_args = default_args,
     description = """
         1) create 'transaction_history' table in local mysqld
         2) insert data to 'transaction_history' table
@@ -65,15 +57,16 @@ with DAG(
     catchup = False,
     tags = ['mysql', 'local', 'test', 'employees']
 ) as dag:
+    
     create_table = MySqlOperator(
-        task_id="create_employees_table",
-        mysql_conn_id="mysql_local_test",
+        task_id="create_transaction_history_table",
+        mysql_conn_id="mysql_localhost",
         sql=sql_create_table,
     )
 
     insert_table = MySqlOperator(
-        task_id="insert_employees_data",
-        mysql_conn_id="mysql_local_test",
+        task_id="insert_transaction_history",
+        mysql_conn_id="mysql_localhost",
         sql=sql_insert_data
     )
 
