@@ -22,6 +22,9 @@
 **MySQL**
 ![image](https://github.com/jongjunkim/Transaction_History_DAG/blob/main/images/successfully.PNG)
 
+**S3**
+![image](https://github.com/jongjunkim/Transaction_History_DAG/blob/main/images/s3_bucket.PNG)
+
 ## Error issued
 ####  11/13/2023
 * Broken DAG: [/opt/airflow/dags/transaction.py] Traceback (most recent call last):
