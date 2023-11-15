@@ -28,7 +28,7 @@
 ![image](https://github.com/jongjunkim/Transaction_History_DAG/blob/main/images/s3_bucket.PNG)
 
 ## Error issued
-####  11/13/2023
+
 * Broken DAG: [/opt/airflow/dags/transaction.py] Traceback (most recent call last):
   File "/opt/airflow/dags/transaction.py", line 52, in <module>
     sql_insert_data = insert_table(filedirectory)
@@ -45,8 +45,9 @@ FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\JONGJUN KIM\
 *- ./data:/opt/airflow/data
 * Then in your DAG code point to "/opt/airflow/data/transaction.csv".
 
-#### 11/14/2023
-* mySQL_to_S3 DAG failed 
+## Error issued
+* mySQL_to_S3 DAG failed
+  
 * #### Error solved
 * Thought I had to export MySQL data to the local directory and load the file to S3.
 * Solution: use the following code
