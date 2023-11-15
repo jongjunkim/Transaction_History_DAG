@@ -40,5 +40,27 @@ FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\JONGJUN KIM\
 *- ./data:/opt/airflow/data
 * Then in your DAG code point to "/opt/airflow/data/transaction.csv".
 
-#### 11/13/2023
+#### 11/14/2023
 * mySQL_to_S3 DAG failed
+* #### Error solved
+* Thought I had to export MySQL data to the local directory and load the file to S3.
+* Solution: use the following code 
+  
+``` Python
+from airflow.providers.amazon.aws.transfers.sql_to_s3 import SqlToS3Operator   
+
+ mysql_to_s3_nps = SqlToS3Operator(
+    task_id = 'mysql_to_s3',
+    query = "SELECT * FROM transaction_history ",
+    s3_bucket = 'jongjun',
+    s3_key = 'data/transaction_history.csv',
+    sql_conn_id = "mysql_localhost",
+    aws_conn_id = "aws_access",
+    verify = False,
+    replace = True,
+    pd_kwargs={"index": False, "header": False},    
+    dag = dag
+)
+```
+
+  
