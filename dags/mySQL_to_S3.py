@@ -2,51 +2,34 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.amazon.aws.transfers.sql_to_s3 import SqlToS3Operator
-from airflow.providers.mysql.operators.mysql import MySqlOperator
 
-
-def upload_to_s3(filename: str, key: str, bucket_name: str) -> None:
-    hook = S3Hook('aws_access')
-    hook.load_file(filename=filename, key=key, bucket_name=bucket_name)
 
 
 dag = DAG(
-    dag_id = "MySQL_to_S3",
-    start_date = datetime(2023,11,14),
-    schedule = timedelta(minutes = 1),
+    dag_id = 'MySQL_to_S3',
+    start_date = datetime(2023,11,13), 
+    schedule = '10 9 * * *',
+    max_active_runs = 1,
     catchup = False,
-    tags = ['S3', 'mysql_to_s3']
+    default_args = {
+        'retries': 1,
+        'retry_delay': timedelta(minutes=1),
+    }
 )
 
-DIR_PATH = 'C:\\Users\\JONGJUN KIM\\Airflow\\data\\'
-FILE_NAME = 'transaction.csv'
-FILE_PATH = DIR_PATH + FILE_NAME
-
-mysql_sql = """
-    SELECT * FROM transaction_history
-    INTO OUTFILE '{0}'
-    FIELDS TERMINATED BY ','
-    ENCLOSED BY '"'
-    LINES TERMINATED BY '\n';
-""".format(FILE_PATH)
+sql = "SELECT * FROM transaction_history;"
 
 
-export_mysql_data = MySqlOperator(
-        task_id = 'export_mysql_data',
-        mysql_conn_id = 'mysql_local_test',
-        sql = mysql_sql
+mysql_to_s3_nps = SqlToS3Operator(
+    task_id = 'mysql_to_s3',
+    query = sql,
+    s3_bucket = 'jongjun',
+    s3_key = 'transaction_history.csv',
+    sql_conn_id = "mysql_localhost",
+    aws_conn_id = "aws_s3",
+    verify = False,
+    replace = True,
+    pd_kwargs={"index": False, "header": False},    
+    dag = dag
 )
-
-sql_to_s3_task = PythonOperator(
-    task_id="sql_to_s3_task",
-    python_callable=upload_to_s3,
-    op_kwargs={
-        'filename': FILE_PATH, 
-        'key': 'data/AccountHistory.csv', 
-        'bucket_name': 'jongjun'
-    },
-    dag=dag
-)
-export_mysql_data >> sql_to_s3_task
