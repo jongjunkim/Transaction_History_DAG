@@ -39,3 +39,6 @@ FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\JONGJUN KIM\
 *- ./plugins:/opt/airflow/plugins
 *- ./data:/opt/airflow/data
 * Then in your DAG code point to "/opt/airflow/data/transaction.csv".
+
+#### 11/13/2023
+* mySQL_to_S3 DAG failed
