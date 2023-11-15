@@ -6,7 +6,7 @@
 
 **Data used: my personal bank account records as CSV file**
 
-**Tech Stack:  Apache Airflow, MYSQL, Amazon S3, Spark**
+**Tech Stack:  Apache Airflow, MYSQL, Amazon S3, Spark, Google Colab**
 
 1. After downloading the CSV file, I considered the appropriate attributes for the MySQL table.
 2. Excluded Account number, Check, and Status from the data,
@@ -14,7 +14,7 @@
 4. Tansformed the data, and created a DAG to load it into a MySQL table. The DAG follows a create_table -> insert_data pattern.
 5. Set up a DAG to export the MySQL data and store it on Amazon S3.
 6. Export Data from S3 and transform the data with Spark
-7. Data Analysis
+7. Data Analysis on Transaction_history in Google Colb environment
 
 
 **Airflow UI**
